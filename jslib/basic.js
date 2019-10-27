@@ -1,112 +1,30 @@
-//AJAX COMMUNICATION BABEL
-
-	const lnk = "/doLogin";
-	
-	const sendReq = (link ) => {
-	fetch(link, { headers: { "Content-Type": "application/json; charset=utf-8" }})
-	    .then(res => res.json()) // parse response as JSON (can be res.text() for plain response)
-	    .then(response => {
-	        // here you do what you want with response
-	    })
-	    .catch(err => {
-	        console.log("u")
-	        alert("sorry, there are no results for your search")
-	    }
-	);
-}
-
-// END BABEL
-
-
-	// AJAX LYB
-	function ajax( type, url, paramstring, callb, onerror ){
-		var xmlhttp = window.XMLHttpRequest ?
-                        new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-		
-		xmlhttp.onreadystatechange = function() {
-			if (xmlhttp.readyState == 4 /* && xmlhttp.status == 200 */)
-				var resp = JSON.stringify(xmlhttp.responseText);
-			console.log(" JSON-RESPONSE>>>> : " + JSON.stringify(xmlhttp.responseText)); // Here is the response
-			if( resp.indexOf("meta") > -1 ){
-				document.head.innerHTML += resp;
+	//function ajaxRequest( { reqType, reqUri, queryStr, onSuccess, onError } )
+	function ajaxRequest( parObj )
+	{
+		var o = parObj;
+		//var link = "https://en.wikipedia.org/w/api.php?action=query&prop=info&pageids="+ page +"&format=json&callback=?";
+		var xmlHttp = new XMLHttpRequest(); 
+	        xmlHttp.onreadystatechange = function() //monitors and waits for response from the server
+	        {
+			
+			//alert(xmlHttp.status + " : RSTATE : " +  xmlHttp.readyState);
+			if(xmlHttp.readyState === 4 ) //response has status -> "OK"
+	           	{
+	        	       if( xmlHttp.status === 200 ){
+	     				o.onSuccess( xmlHttp.responseText );
+				} else {
+					
+	               			o.onError( xmlHttp.responseText );
+				}
 			}
-
-			//alert(" JSON-RESPONSE" + JSON.stringify(xmlhttp.responseText)); // Here is the response
-
-		}
-
-		xmlhttp.withCredentials = true;
-		//xmlhttp.open("POST",getUrlPar , true);
-		xmlhttp.open( type , getUrlPar, true);
-		//xmlhttp.send("user=" + name + "&password=" + password + "");
-		xmlhttp.send(paramstring);
+	
+	        }
+	        //xmlHttp.open("GET", link); 
+		xmlHttp.withCredentials = true;
+	        xmlHttp.open( o.type, o.uri + "?" + o.query ); 
+	        xmlHttp.send(); 
 	}
 
-//function ajaxRequest( { reqType, reqUri, queryStr, onSuccess, onError } )
-function ajaxRequest( parObj )
-{
-	var o = parObj;
-	//var link = "https://en.wikipedia.org/w/api.php?action=query&prop=info&pageids="+ page +"&format=json&callback=?";
-	var xmlHttp = new XMLHttpRequest(); // creates 'ajax' object
-        xmlHttp.onreadystatechange = function() //monitors and waits for response from the server
-        {
-		
-		//alert(xmlHttp.status + " : RSTATE : " +  xmlHttp.readyState);
-		if(xmlHttp.readyState === 4 ) //checks if response was with status -> "OK"
-           	{
-        	       if( xmlHttp.status === 200 ){
-				//var re = JSON.parse(xmlHttp.responseText); 
-		               //if(re["Status"] === "Success")
-     				o.onSuccess( xmlHttp.responseText );
-			} else {
-				
-               			o.onError( xmlHttp.responseText );
-			}
-		}
-
-        }
-        //xmlHttp.open("GET", link); //set method and address
-	xmlHttp.withCredentials = true;
-        xmlHttp.open( o.type, o.uri + "?" + o.query ); 
-        xmlHttp.send(); //send data
-}
-
-	function sendCred(){
-		var bttn = document.getElementById("sendCredenti");
-		bttn.addEventListener( "click", (e) => {
-			e.preventDefault;
-			//alert('BACKEND');
-			var xmlhttp = window.XMLHttpRequest ?
-				new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-			
-			xmlhttp.onreadystatechange = function() {
-				if (xmlhttp.readyState == 4 /* && xmlhttp.status == 200 */)
-					var resp = JSON.stringify(xmlhttp.responseText);
-				console.log(" JSON-RESPONSE>>>> : " + JSON.stringify(xmlhttp.responseText)); // Here is the response
-				if( resp.indexOf("meta") > -1 ){
-					document.head.innerHTML += resp;
-				}
-	
-					//alert(" JSON-RESPONSE" + JSON.stringify(xmlhttp.responseText)); // Here is the response
-			}
-			
-			var name = document.getElementsByName("uname")[0].value;
-			var password = document.getElementsByName('psw')[0].value;
-			//make better validator
-			if( !name.match(/.+/) || !password.match(/.+/) ){
-				alert("User or password empty");
-				return;
-			}
-			//var getUrlPar = "http://timenovestacom/credential/" + name + "/" + password + "";
-			var getUrlPar = "http://timenovestacom/credential";
-			//console.log("###############################" + getUrlPar);
-			alert("SENDING NEW: " +  getUrlPar);
-			//xmlhttp.open("GET",getUrlPar , true);
-			xmlhttp.open("POST",getUrlPar , true);
-			xmlhttp.send("user=" + name + "&password=" + password + "");
-	
-		});
-	};
 	
 	//HTML LYBRARY
 	function toggleView( obj ){
@@ -121,12 +39,7 @@ function ajaxRequest( parObj )
 		obj.style.opacity = opacity;
 	
 	}
-
-	function toggleOpacity( obj ){
-		
-	}
-
-	//	
+	
 	function say(sentence){
 		document.writeln(sentence);
 	}
@@ -150,8 +63,6 @@ function ajaxRequest( parObj )
 
 	//{ lbTxt : lbTxt, inpProps : inputPropertiesObject, labProps : labelPropertiesObject }
 	function InpLabComb( propsObj ){
-		//say('<input id="nm" value="" class="inputText" type="text" name="Name" oninput="checkInputLabel(this);" autocomplete="off">')
-		//say('<pre>' + JSON.stringify(propsObj) + ' </pre>');	
 		var input, label, inp_lab;
 
 		try {
@@ -190,8 +101,6 @@ function ajaxRequest( parObj )
 	
 	//{ lbTxt : lbTxt, inpProps : inputPropertiesObject, labProps : labelPropertiesObject }
 	function LabInpComb( propsObj ){
-		//say('<input id="nm" value="" class="inputText" type="text" name="Name" oninput="checkInputLabel(this);" autocomplete="off">')
-		//say('<pre>' + JSON.stringify(propsObj) + ' </pre>');	
 		var input, label, inp_lab;
 
 		try {
@@ -241,7 +150,7 @@ function ajaxRequest( parObj )
 		return propsObj.orig;
 	}
 	
-	/* WITH THIS 3 FUNCTIONS SAY, TAG AND CHNGPROPS, YOU CAN BUILD MORE COMPLEX TAG-BUILDER */
+	/* THIS 3 FUNCTIONS ( SAY, TAG AND CHNGPROPS ) CAN BE USED FOR BUILDING MORE COMPLEX TAG-BUILDER */
 
 	var ilPrps = { 
 		lbTxt : 'Name', 
@@ -256,7 +165,6 @@ function ajaxRequest( parObj )
 	};
 	
 	function enabInpLab( attrObj ){
-		//say ( JSON.stringify( adptInpLabProbs({ ilProps : ilPrps, overwrite : { tx : 'NewName' } } ) ) );
 	
 		ilPrps.inpProps = chngProps( { orig : ilPrps.inpProps, overwrite : { tx : '' } } );
 		ilPrps.inpProps.props = chngProps( { orig : ilPrps.inpProps.props, overwrite : { id : attrObj.inpId, type : attrObj.inpType } } );
@@ -349,11 +257,6 @@ function ajaxRequest( parObj )
 		data = data.replace(/&$/, "");
 		return data;
 	}
-	/*  USING THE TAG-SET-FUNCTIONS, CAN MIX BABEL AND JAVASCRIPT AND USE <SCRIPT >...</SCR... > AS TPL LIKE <?PHP> </?> */	
-	//say( enabInpLab( { inpId : 'email', labText : 'NewOldName', labId : 'labEm' } ) ); say('<br />');	
-	//say( enabInpLab( { inpId : 'password', labText : 'Password', labId : 'labPw' } ) ); say('<br />');
-	//say( button1( { id:'logsend', value:' Send ' } ) );	
-// END HTML-LYB
 
 	function checkInputLabel(obj) {
 	        var myLabel = obj.parentNode.getElementsByClassName('labelText')[0];
@@ -375,7 +278,6 @@ function ajaxRequest( parObj )
 	        obj.classList.add('labelTextUp');
 	        var ths = obj.parentNode.getElementsByClassName('inputText')[0];
 	        ths.focus();
-	        //ths.style.borderColor = "yellow";
 	        
 	}
 
