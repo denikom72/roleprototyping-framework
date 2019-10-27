@@ -1,0 +1,155 @@
+body{
+        font-family: sans-serif, arial;
+        font-style: monospace;
+        font-size: 14px;
+        padding: 0;
+}
+
+#loginpage{
+        background: rgba( 0, 0, 0, 0.9);
+        position: absolute;
+        top: 0px; left: 0px;
+        height:100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+
+        transition: all .4s ease-out;
+        -webkit-transition: all .4s ease-out;
+        -moz-transition: all .4s ease-out;
+        -ms-transition: all .4s ease-out;
+        -o-transition: all .4s ease-out;
+}
+
+.formContent, .rfidContent{
+        position:absolute;
+        top: 30%;
+        left: 30%;
+        background: rgba(255, 255, 255, 0.99) !important;
+        padding: 40px;
+        border-radius: 0% 16% 16% 16%;
+        width: 350px;
+
+
+        transition: all .4s ease-out;
+        -webkit-transition: all .4s ease-out;
+        -moz-transition: all .4s ease-out;
+        -ms-transition: all .4s ease-out;
+        -o-transition: all .4s ease-out;
+}
+
+.rfidContent{
+
+        background: rgba(0, 0, 0, 0.7) !important;
+        width: 350px;
+        height: 200px;
+        padding: 10px;
+        text-align: center;
+        color: #fff;
+        font-size: 30px;
+}
+
+input[type=text], input[type=password] {
+        width: 97%;
+        margin: 2px 0;
+        display: inline-block !important;
+        border: 1px solid #3aafa9;
+        border-radius: 6px;
+        box-sizing: border-box;
+        float: left;
+        color: #3aafa9;
+}
+
+.inputText {
+        height: 40px;
+        padding: 25px 10px 10px 10px;
+        width: 300px;
+        font-size: 14px;
+        border: solid 1px #888;
+        background-color: white;
+        margin: 0;
+        position: relative;
+        box-sizing: border-box;
+}
+
+.labelTextDefault {
+        top: -28px;
+}
+
+.labelText {
+        font-family: 'Arial';
+        position: relative;
+        color: #3aafa9;
+        left: 15%;
+        //display: inherit;
+	transition: all .4s ease-out;
+        -webkit-transition: all .4s ease-out;
+        -moz-transition: all .4s ease-out;
+        -ms-transition: all .4s ease-out;
+        -o-transition: all .4s ease-out;
+        width:97%;
+	cursor: text;
+}
+
+.inputText:focus{
+        border: 2px solid #3aafa9;
+        color: #3aafa9;
+}
+
+.inputText:focus ~  .labelText, .labelTextUp {
+        top: -38px;
+        left: 10px;
+        font-weight: bold;
+        font-size: 12px;
+        //border: 1px solid #3aafa9;
+        color: #3aafa9;
+}
+
+div.inpLabel, div.mybtn {
+	float: left;
+	width : 200px;
+}
+
+div.labelInp {
+	float: none;
+	width : 100%;
+	text-align: right;
+	margin-top: 40px;
+}
+#searchblock div.inpLabel, #search {
+	width: 99%;
+	margin:0;padding:0;
+}
+
+body{
+	background: #f8f8ff; 
+}
+.button, .plus, input[type=button] {
+        background-color: #3aafa9;
+        border-radius: 6px;
+        color: white;
+        padding: 14px 20px;
+        margin: 2px 5px;
+        border: none;
+        cursor: pointer;
+        height: 43px;
+        width: 97%;
+}
+
+#slideMe, #openLoginForm {
+        color: white;
+        font-size: 30px;
+        padding: 15px;
+        position: absolute;
+        width: 26px;
+        text-align: center;
+        right: 25px;
+        top: 20px;
+        cursor:pointer;
+
+}
+
+#openLoginForm {
+        color: black;
+}
+
