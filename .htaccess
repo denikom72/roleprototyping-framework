@@ -1,0 +1,6 @@
+RewriteBase /
+RewriteCond %{HTTP_HOST} ^roleproto-frame$ [NC]
+RewriteRule ^/?$ /login [L,R]
+
+RewriteCond %{REQUEST_URI} !^/(jslib|data|test2)
+RewriteRule . /var/www/roleproto-frame/Router.pl [L]

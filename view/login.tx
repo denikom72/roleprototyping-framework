@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<script src="jslib/react.development.js"></script>
+	<script src="jslib/react-dom.development.js"></script>
+	<script src="jslib/babel.js"></script>
+	<title>React App</title>
+</head>
+<body>
+
+<style type="text/css">
+
+body{
+	font-family: sans-serif, arial;
+	font-style: monospace;
+	font-size: 14px;
+	padding: 0;
+}
+
+#loginpage{
+	background: rgba( 0, 0, 0, 0.9);
+	position: absolute;
+	top: 0px; left: 0px;
+	height:100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+
+	transition: all .4s ease-out;
+	-webkit-transition: all .4s ease-out;
+	-moz-transition: all .4s ease-out;
+	-ms-transition: all .4s ease-out;
+	-o-transition: all .4s ease-out;
+}
+
+.formContent, .rfidContent{
+	position:absolute;
+	top: 30%;
+	left: 30%;
+    	background: rgba(255, 255, 255, 0.99) !important;
+	padding: 40px;
+	border-radius: 0% 16% 16% 16%;
+	width: 350px;
+
+
+	transition: all .4s ease-out;
+	-webkit-transition: all .4s ease-out;
+	-moz-transition: all .4s ease-out;
+	-ms-transition: all .4s ease-out;
+	-o-transition: all .4s ease-out;
+}
+
+.rfidContent{
+	
+    	background: rgba(0, 0, 0, 0.7) !important;
+	width: 350px;
+	height: 200px;
+	padding: 10px;
+	text-align: center;
+	color: #fff;
+	font-size: 30px;
+}
+
+input[type=text], input[type=password] {
+	width: 97%;
+	margin: 2px 0;
+	display: inline-block;
+	border: 1px solid #005E5E;
+	border-radius: 6px;
+	box-sizing: border-box;
+	float: left;
+	color: #005E5E;
+}
+	
+.inputText {
+	height: 40px;
+	padding: 25px 10px 10px 10px;
+	width: 300px;
+	font-size: 14px;
+	border: solid 1px #888;
+	background-color: white;
+	margin: 0;
+	position: relative;
+	box-sizing: border-box;
+}
+
+.labelTextDefault {
+	top: -28px;
+}
+
+.labelText {
+	font-family: 'Arial';
+	position: relative;
+	color: #005e5e;
+	left: 39%;
+	transition: all .4s ease-out;
+	-webkit-transition: all .4s ease-out;
+	-moz-transition: all .4s ease-out;
+	-ms-transition: all .4s ease-out;
+	-o-transition: all .4s ease-out;
+	cursor: text;
+}
+
+.inputText:focus{
+	border: 2px solid #005e5e;
+	color: #005e5e;
+}
+.inputText:focus ~  .labelText, .labelTextUp {
+	top: -38px;
+	left: 10px;
+	font-weight: bold;
+	font-size: 12px;
+	//border: 1px solid #005e5e;
+	color: #005e5e;
+}
+.button, .plus, input[type=button] {
+	background-color: #005E5E;
+	border-radius: 6px;
+	color: white;
+	padding: 14px 20px;
+	margin: 2px 5px;
+	border: none;
+	cursor: pointer;
+	height: 43px;
+	width: 97%;
+}
+#slideMe, #openLoginForm {
+	color: white;
+	font-size: 30px;
+	padding: 15px;
+	position: absolute;
+	width: 26px;
+	text-align: center;
+	right: 25px;
+	top: 20px;
+	cursor:pointer;
+
+}
+
+#openLoginForm {
+	color: black;
+}
+</style>
+
+<noscript>
+</noscript>
+<div id="openLoginForm" onclick="toggleView(document.getElementById('loginpage'))"> X </div>
+<div class="rfidContent">RFID-SCANNER<br><div style="font-size: 17px;">TODO:<br>By scanning the rfid, all time- or other information, gonna be outputed, just readeable, not changeable</div></div>
+<div id="loginpage">
+<div id="slideMe" onclick="toggleView(this.parentNode)"> X </div>
+<div class="formContent" id="root"></div>
+
+<!-- div style="position:absolute;top: 40%; left: 40%;">
+<form method="post" action="">
+<div><input type=text id="email"></input><label>Username</label></div><br>	
+<div><input type=text value=" password" id="pw"></input></div><br>	
+<div><input type=button id="logsend" value=" send "></input></div><br>
+</form>
+</div -->
+
+<!-- AJAX COMMUNICATION BABEL-->
+<script type="text/babel">
+
+	const lnk = "/doLogin";
+	
+	const sendReq = (link ) => {
+	fetch(link, { headers: { "Content-Type": "application/json; charset=utf-8" }})
+	    .then(res => res.json()) // parse response as JSON (can be res.text() for plain response)
+	    .then(response => {
+	        // here you do what you want with response
+	    })
+	    .catch(err => {
+	        console.log("u")
+	        alert("sorry, there are no results for your search")
+	    }
+	);
+}
+</script>
+
+<!-- AJAX COMMUNICATION BABEL-->
+<script type="text/javascript">
+
+	function ajax( type, url, paramstring, callb, onerror ){
+		var xmlhttp = window.XMLHttpRequest ?
+                        new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+		
+		xmlhttp.onreadystatechange = function() {
+			if (xmlhttp.readyState == 4 /* && xmlhttp.status == 200 */)
+				var resp = JSON.stringify(xmlhttp.responseText);
+			console.log(" JSON-RESPONSE>>>> : " + JSON.stringify(xmlhttp.responseText)); // Here is the response
+			if( resp.indexOf("meta") > -1 ){
+				document.head.innerHTML += resp;
+			}
+
+			//alert(" JSON-RESPONSE" + JSON.stringify(xmlhttp.responseText)); // Here is the response
+
+		}
+
+		xmlhttp.withCredentials = true;
+		//xmlhttp.open("POST",getUrlPar , true);
+		xmlhttp.open( type , getUrlPar, true);
+		//xmlhttp.send("user=" + name + "&password=" + password + "");
+		xmlhttp.send(paramstring);
+	}
+
+//function ajaxRequest( { reqType, reqUri, queryStr, onSuccess, onError } )
+function ajaxRequest( parObj )
+{
+	var o = parObj;
+	//var link = "https://en.wikipedia.org/w/api.php?action=query&prop=info&pageids="+ page +"&format=json&callback=?";
+	var xmlHttp = new XMLHttpRequest(); // creates 'ajax' object
+        xmlHttp.onreadystatechange = function() //monitors and waits for response from the server
+        {
+		
+		//alert(xmlHttp.status + " : RSTATE : " +  xmlHttp.readyState);
+		if(xmlHttp.readyState === 4 ) //checks if response was with status -> "OK"
+           	{
+        	       if( xmlHttp.status === 200 ){
+				//var re = JSON.parse(xmlHttp.responseText); //gets data and parses it, in this case we know that data type is JSON. 
+		               //if(re["Status"] === "Success")
+     				o.onSuccess( xmlHttp.responseText );
+			} else {
+				
+               			o.onError( xmlHttp.responseText );
+			}
+		}
+
+        }
+        //xmlHttp.open("GET", link); //set method and address
+	xmlHttp.withCredentials = true;
+        xmlHttp.open( o.type, o.uri + "?" + o.query ); //set method and address
+        xmlHttp.send(); //send data
+}
+
+	function sendCred(){
+		var bttn = document.getElementById("sendCredenti");
+		bttn.addEventListener( "click", (e) => {
+			e.preventDefault;
+			//alert('BBBBBACKEND');
+			var xmlhttp = window.XMLHttpRequest ?
+				new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+			
+			xmlhttp.onreadystatechange = function() {
+				if (xmlhttp.readyState == 4 /* && xmlhttp.status == 200 */)
+					var resp = JSON.stringify(xmlhttp.responseText);
+				console.log(" JSON-RESPONSE>>>> : " + JSON.stringify(xmlhttp.responseText)); // Here is the response
+				if( resp.indexOf("meta") > -1 ){
+					document.head.innerHTML += resp;
+				}
+	
+					//alert(" JSON-RESPONSE" + JSON.stringify(xmlhttp.responseText)); // Here is the response
+			}
+			
+			var name = document.getElementsByName("uname")[0].value;
+			var password = document.getElementsByName('psw')[0].value;
+			//make better validator
+			if( !name.match(/.+/) || !password.match(/.+/) ){
+				alert("User or password empty");
+				return;
+			}
+			//var getUrlPar = "http://timenovestacom/credential/" + name + "/" + password + "";
+			var getUrlPar = "http://timenovestacom/credential";
+			//console.log("###############################" + getUrlPar);
+			alert("SENDING NEW: " +  getUrlPar);
+			//xmlhttp.open("GET",getUrlPar , true);
+			xmlhttp.open("POST",getUrlPar , true);
+			xmlhttp.send("user=" + name + "&password=" + password + "");
+	
+		});
+	};
+</script>
+
+<!-- HTML LIBRARY   -->
+<script type="text/javascript">
+
+	function toggleView( obj ){
+		var expand = '100px', opacity = '0';
+
+		if( obj.offsetWidth <= 240 ){
+			expand = '100%';
+			opacity = '0.99';
+		}
+
+		obj.style.width = expand; 
+		obj.style.opacity = opacity;
+	
+	}
+
+	function toggleOpacity( obj ){
+		
+	}
+
+	//	
+	function say(sentence){
+		document.writeln(sentence);
+	}
+	
+	//TODO : Refactoring
+	function tag( prop ){
+		
+		var buildTag = '<' + prop.tn + ' ';
+
+		var k = Object.keys( prop.props );
+
+		k.map(function(v,i){
+			buildTag += ' ' + v + '= "' + prop.props[v] + '"';
+		});
+
+		buildTag += '>';
+		buildTag += prop.tx;
+		buildTag += '</' + prop.tn  + '>';
+		return buildTag;
+	}
+
+	//{ lbTxt : lbTxt, inpProps : inputPropertiesObject, labProps : labelPropertiesObject }
+	function InpLabComb( propsObj ){
+		//say('<input id="nm" value="" class="inputText" type="text" name="Name" oninput="checkInputLabel(this);" autocomplete="off">')
+		//say('<pre>' + JSON.stringify(propsObj) + ' </pre>');	
+		var input, label, inp_lab;
+
+		try {
+			input =	tag({ 
+				tn : 'input',
+				tx : propsObj.inpProps.tx,
+				props : { 
+					class:propsObj.inpProps.props.class,
+					id : propsObj.inpProps.props.id,
+					oninput:propsObj.inpProps.props.oninput,
+					autocomplete:'off',
+					type:propsObj.inpProps.props.type 
+				} 
+			} );
+			
+			label =	tag({ 
+				tn : 'label',
+				tx : propsObj.labProps.tx,
+				props : {
+					class : 'labelText labelTextDefault',
+					id : propsObj.labProps.props.id,
+					oninput : 'changeInputLabel(this);'
+				}
+			} );
+		
+		} catch( err ) {
+
+		} finally {
+			inp_lab = input + label;
+		}
+
+		return inp_lab;
+	}
+
+	
+
+	
+	//  
+	function chngProps( propsObj ){
+		
+		var overw = Object.keys( propsObj.overwrite );
+
+		overw.map(function(v, i){
+
+			propsObj.orig[v] = propsObj.overwrite[v];
+		});
+
+		return propsObj.orig;
+	}
+	
+	/* WITH THIS 3 FUNCTIONS SAY, TAG AND CHNGPROPS, YOU CAN BUILD MORE COMPLEX TAG-BUILDER */
+
+	var ilPrps = { 
+		lbTxt : 'Name', 
+		inpProps : { 
+				tx : '',
+				props : { class:'inputText', oninput:'checkInputLabel(this);', autocomplete:'off', id:'email', type:'text' } 
+		},
+		labProps : {
+				tx : 'NewName',
+                                props : { class:'labelText labelTextDefault', oninput:'changeInputLabel(this);', autocomplete:'off', id:'lablEmail' }
+		} 
+	};
+	
+	function enabInpLab( attrObj ){
+		//say ( JSON.stringify( adptInpLabProbs({ ilProps : ilPrps, overwrite : { tx : 'NewName' } } ) ) );
+	
+		ilPrps.inpProps = chngProps( { orig : ilPrps.inpProps, overwrite : { tx : '' } } );
+		ilPrps.inpProps.props = chngProps( { orig : ilPrps.inpProps.props, overwrite : { id : attrObj.inpId, type : attrObj.inpType } } );
+	
+		ilPrps.labProps = chngProps( { orig : ilPrps.labProps, overwrite : { tx : attrObj.labText } } );
+		ilPrps.labProps.props = chngProps( { orig : ilPrps.labProps.props, overwrite : { id : attrObj.labId } } );
+	
+		var viewFrag = '<div class="">' + InpLabComb( ilPrps ) + '</div>';
+		
+		return viewFrag;
+	}
+
+
+	function button1( propObj ){
+
+		return tag( { tn: 'input', tx:'', props : { type : 'button', id : propObj.id, value : propObj.value } } );	
+	}
+	
+	function labl(){
+
+		say('<label class="labelText labelTextDefault" oninput="changeInputLabel(this);">Name</label>') 
+	}
+
+
+
+	/*  USING THE TAG-SET-FUNCTIONS, CAN MIX BABEL AND JAVASCRIPT AND USE <SCRIPT >...</SCR... > AS TPL LIKE <?PHP> </?> */	
+	//say( enabInpLab( { inpId : 'email', labText : 'NewOldName', labId : 'labEm' } ) ); say('<br />');	
+	//say( enabInpLab( { inpId : 'password', labText : 'Password', labId : 'labPw' } ) ); say('<br />');
+	//say( button1( { id:'logsend', value:' Send ' } ) );	
+// END HTML-LYB
+</script>
+
+<script type="text/javascript">	
+	var formFrag = [ 
+
+		enabInpLab( { inpId : 'email', labText : 'NewOldName', labId : 'labEm', inpType : 'text' } ),
+		
+		enabInpLab( { inpId : 'password', labText : 'Password', labId : 'labPw', inpType : 'password' } ),
+		
+		button1( { id:'logsend', value:' Send ' } )
+	];
+
+	// Wrapping and viewFragment into another 
+	var form = tag( { tn:'form', tx:formFrag.join(''), props:{ value:' Send ', type:'get', action:'doLogin' } } );
+	
+	form += tag( { tn:'div', tx:'', props:{ id:'credErr' } } );
+
+	//addEventListner doesn't work
+	//say( form );
+		
+	//document.body.appendChild( new DOMParser().parseFromString( form, 'text/html' ) );
+	
+	//document.body.innerHTML += form;
+	var node = document.getElementById('root');
+	
+	node.innerHTML += form;
+
+
+	var bttn = document.getElementById('logsend');
+
+	bttn.addEventListener('click', function(e){
+		var user = document.getElementsByTagName('input')[0].value;
+		var pw = document.getElementsByTagName('input')[1].value;
+		//alert( user + ' : ' + pw );
+		//document.location.href = "/doLogin?user=" + user + "&password=" + pw;
+		//document.location.href = "/servLogin?user=" + user + "&password=" + pw;
+		
+		var onSucc = function(myresp){ 
+			alert("FIRST ALERT : " + myresp);
+
+			var resp = JSON.parse(myresp);
+			var sessData = resp[0]['rets'];
+			
+			console.error( "SESSDATA : " + typeof sessData );
+			alert( "SESSDATA : " + resp[0]['rets'].toString() );
+			
+			var sid = sessData.toString().split(",")[0].replace( /(^\s*|\s*$)/, "" );
+			var user = sessData.toString().split(",")[1].replace( /(^\s*|\s*$)/, "" );
+	
+			//if( resp.sid.indexOf('sid') > -1 ){
+			if( sid && sid != ""  ){
+				alert( "INTO FIRST IF : " + JSON.stringify( resp ) );
+				if(document.cookie != ""){
+					document.cookie = "";
+
+					document.cookie = "sid="+sid+"; max-age=864000; path=/; ";
+					//document.cookie = "sid="+resp.sid+"; expires= Thu, 21 Aug 2017 20:00:00 UTC; path=/;HttpOnly ";
+
+					alert( "EMPTY OR NOT : " + document.cookie );
+				}
+				//document.cookie = "sid="+resp.sid+"; expires= Thu, 21 Aug 2017 20:00:00 UTC; path=/;HttpOnly ";
+				// TODO - USE CHECK SESS-ID AND USERNAME TO CHECK ROLE-PRIORITY AND SHOW VISUAL PARTS OF .. IF NO SESSION, THEN REDIRECT HREF TO LOGIN ( FROM SERVER-PART, NOT JS CLIENT )
+				document.cookie = "sid="+sid+"; max-age=86400; path=/; ";
+				document.cookie = "user="+user+"; max-age=86400; path=/; ";
+				document.location.href = "/doLogin?user=" + user;
+			} else {
+
+				//alert("NO COOCKIE SETTED : > " + resp);
+				try {
+					document.getElementById('credErr').removeChild( document.getElementById('wrongcred') );
+				} catch (err) {
+					console.log(err);
+				}
+
+				var dv = document.createElement('div');
+				dv.setAttribute('id', 'wrongcred');
+				dv.style.color = 'red';
+				dv.style.padding = '5px';
+				dv.style.fontSize = '18px';
+				//dv.appendChild( document.createTextNode( JSON.stringify(resp) ) );
+				dv.appendChild( document.createTextNode( 'Wrong credentials' ) );
+
+				document.getElementById('credErr').appendChild( dv );
+				//TEST
+				//document.location.href = "/doLogin?user=" + resp.user;
+			}
+			// TODO : define part if login wrong here
+		}
+		// on error if comun. ajax unsuccesfull, not login
+		var onErr = function(err){ alert("ERROR: " + err ); }
+
+		//ajaxRequest("GET", "/doLogin", "user=" + user + "&password=" + pw, onSucc, onErr);
+		ajaxRequest( {
+			type:"GET",
+			uri:"/servLogin",
+			query:"user=" + user + "&password=" + pw,
+			onSuccess:onSucc,
+			onError:onErr
+		} );
+
+	});
+
+	function checkInputLabel(obj) {
+	        var myLabel = obj.parentNode.getElementsByClassName('labelText')[0];
+	
+	        
+	        if(obj.value) {
+	                myLabel.classList.remove('labelTextDefault');
+	                myLabel.classList.add('labelTextUp');
+	                        console.log(obj);
+	
+	        } else {
+	                myLabel.classList.remove('labelTextUp');
+	                myLabel.classList.add('labelTextDefault');
+	        }
+	}
+	
+	function changeInputLabel(obj) {
+	        obj.classList.remove('labelTextDefault');
+	        obj.classList.add('labelTextUp');
+	        var ths = obj.parentNode.getElementsByClassName('inputText')[0];
+	        ths.focus();
+	        //ths.style.borderColor = "yellow";
+	        
+	}
+
+	[].forEach.call( document.getElementsByClassName('inputText'), function(v,i) {
+
+		checkInputLabel(v);		
+
+	} );
+
+</script>
+
+
+
+<script type="text/babel">
+
+	// BABEL CAN BE MIXED WITH TYPE - JAVASCRIPT, CAUSE BABEL PART GONNA BE COMPILED FIRST, BEFORE JAVASCRIPT WILL BE INTERPRATED
+
+</script>
+</div>
+</body>
+
+</html>

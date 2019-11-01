@@ -1,0 +1,317 @@
+<link rel="stylesheet" type="text/css" href="/jslib/basic.css">
+<script type="text/javascript" src="/jslib/basic.js"></script>
+
+<body style="background-color: rgba( 0,0,0,0.95);">
+<div id=functions style="width:700px; text-align: right; margin: 10%; background-color: rgba( 255,255,255,0.98); border: 0px; border-radius: 30px; padding: 30px;">
+</div>
+
+	
+<script type="text/javascript">
+
+
+	var node1 = document.getElementById('functions');
+
+	var fragm1 = "<table>";
+
+	[% FOREACH v IN funcs1 %]
+		fragm1 += "<tr class=\"funclist\"><td colspan=2>";
+		fragm1 += enabLabInp( { inpId : '[% v %]', labText : '[% v %]', labId : 'lab[% v %]', inpType : 'checkbox' } );
+		fragm1 += "</td><td>";
+		fragm1 +=  option1({ class:'priorBehaviour', style:'', wrappStyle:'padding-top:40px;', class:'button', optList:[ "Priority-Behaviour", "lower", "equals:lower" ] });
+		fragm1 += "</td></tr>";
+	[% END %]
+
+	var selRole = [" -- Role -- "];
+
+	[% FOREACH v IN roles %]
+		selRole.push("[% v %]");
+
+	[% END %]
+
+	fragm1 += "<tr><td>" + option1({ id:'chooseRole', style:'', wrappStyle:'padding-top:20px;', class:'button', optList:selRole }) + "</td><td>";
+	fragm1 +=  button1({ id:'removeRoleRights', value:'Remove', style:'width:150px;', wrappStyle:'padding-top:20px;text-align:right;' }) + "</td><td>";	
+	fragm1 +=  button1({ id:'adaptRoleRights', value:'Save', style:'width:150px;', wrappStyle:'padding-top:20px;text-align:right;' }) + "</td></tr>";	
+
+
+	node1.innerHTML += fragm1 + "</table>";
+
+	var selRole = document.getElementById('chooseRole');
+	selRole.value = "[% http.selRole %]";
+	
+	selRole.addEventListener( "change", (e) => {
+			//console.log( selRole.value );
+		
+			var dl = document.location.href;
+			
+			var baseUri;
+			
+			if( dl.indexOf("?") > -1 ){
+				baseUri = dl.split("?")[0];
+			} else {
+				baseUri = document.location.href;
+			}
+			
+			console.log( ">>>>>>>>>>>>>>>>  " + baseUri  + "?selRole=" + selRole.value );
+
+			document.location.href = baseUri + "?selRole=" + selRole.value;	
+
+
+			/*	
+			*/
+	});
+
+	var removeFuncConf = document.getElementById("removeRoleRights");
+
+	removeFuncConf.addEventListener("click", function(e){
+		e.preventDefault;	
+		alert("CLICK TEST");
+			
+		var onErr = function(err){ alert("ERROR: " + err ); }
+		var onSucc2 = function(resp){ 
+		
+			alert( 'SUCCESFULL -- ' + resp ); 
+			document.location.href = document.location.origin + document.location.pathname + "?selRole=[% http.selRole %]";
+		
+		}
+		//ajaxRequest("GET", "/doLogin", "user=" + user + "&password=" + pw, onSucc, onErr);
+	
+		//var chkd = document.querySelectorAll('[type=checkbox]');
+		var chkd = document.querySelectorAll('[class=funclist]');
+		
+		var functionalities = "";
+
+		[].forEach.call( chkd, ( v, i ) => {
+
+			var chkb = v.querySelector('[type=checkbox]');
+			//var priorbehav = v.querySelector('select');
+
+			if( chkb.checked ){
+				functionalities += chkb.id + "-";
+			}
+		});
+
+	
+		ajaxRequest( {
+			type:"GET",
+			uri:"/applicationAdapter",
+			//query:data,
+			query:"selRole=" + document.getElementById('chooseRole').value + "&functionalities=" + functionalities + "&action=remove",
+			// means if http-req was succesfull, not if applic. backend worked properly
+			onSuccess: onSucc2,
+			onError:onErr
+		} );
+
+	});
+
+	var saveFuncConf = document.getElementById("adaptRoleRights");
+
+	saveFuncConf.addEventListener("click", function(e){
+		e.preventDefault;	
+		alert("CLICK TEST");
+			
+		var onErr = function(err){ alert("ERROR: " + err ); }
+		var onSucc2 = function(resp){ 
+		
+			alert( 'SUCCESFULL -- ' + resp ); 
+			document.location.href = document.location.origin + document.location.pathname + "?selRole=[% http.selRole %]";
+		
+		}
+		//ajaxRequest("GET", "/doLogin", "user=" + user + "&password=" + pw, onSucc, onErr);
+	
+		//var chkd = document.querySelectorAll('[type=checkbox]');
+		var chkd = document.querySelectorAll('[class=funclist]');
+		
+		var functionalities = "";
+
+		[].forEach.call( chkd, ( v, i ) => {
+
+			var chkb = v.querySelector('[type=checkbox]');
+			var priorbehav = v.querySelector('select');
+
+			if( chkb.checked ){
+				functionalities += chkb.id + "_" + priorbehav.value + "-";
+			}
+		});
+
+	
+		ajaxRequest( {
+			type:"GET",
+			uri:"/applicationAdapter",
+			//query:data,
+			query:"selRole=" + document.getElementById('chooseRole').value + "&functionalities=" + functionalities + "&action=save",
+			// means if http-req was succesfull, not if applic. backend worked properly
+			onSuccess: onSucc2,
+			onError:onErr
+		} );
+
+	});
+
+	var priorHash = {
+		'&lt;' : 'lower',
+		'&lt;=' : 'equals:lower'
+	};
+
+	//PREPARE SWITCH CASE WITH INDEXOF, FOR THE CASE THAT EMPTY SPACES ARE A PART OF THE HASHKEYs 
+
+	[% FOREACH c IN funcsByRole %]
+		if( '[% c[0] %]' == 'all' || '[% c[0] %]' == 'root' ) {
+			[].forEach.call( document.querySelectorAll('[type=checkbox]'), (v,i) => {
+				v.checked = true;
+				
+			});
+
+			[].forEach.call( document.querySelectorAll('select'), (v,i) => {
+				v.value = 'equals:lower';
+				
+			});
+	
+			selRole.value = "[% http.selRole %]";
+
+		} else {
+			try {
+				var x = document.getElementById('[% c[0] %]');
+				x.checked = true;
+				x.parentElement.parentElement.nextElementSibling.getElementsByTagName('select')[0].value = priorHash["[% c[1] %]"];
+				console.log("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT\n");
+				console.log('[% c[1] %]');
+				console.log(priorHash["[% c[1] %]"]);
+				//x.parentElement.parentElement.nextElementSibling.getElementsByTagName('select')[0].value = 'lower';
+			} catch( err ) {
+				console.log(err);
+			}
+		}
+	[% END %]		
+
+</script>
+
+
+<script type="text/javascript">
+/*
+	var node = document.getElementById('searchblock');
+	var fragm = tag( { 
+			tn:'div', 
+			tx: enabInpLab( { inpId : 'search', labText : 'name, surname, rfid, company, position, role or username', labId : 'labSearch', inpType : 'text' } ), 
+			props:{ 
+				style:'overflow-y: auto; height: 300px; width: 70%; float: left;' 
+			} 
+	} );
+	
+	fragm += button1({ id:'addNewPerson', value:'+', style:'width:150px;float: none;' });
+	fragm += button1({ id:'hourslist', value:'Hours list', style:'width:150px;' });
+	fragm += button1({ id:'protocol', value:'Protocol', style:'width:150px;' });
+	fragm += button1({ id:'roleMan', value:'Manage Roles', style:'width:150px;' });
+	fragm += button1({ id:'compMan', value:'Manage Companies', style:'width:150px;' });
+	fragm += button1({ id:'rfidMan', value:'Manage RFIDs', style:'width:150px;' });
+	fragm += button1({ id:'emplConf', value:'Staff-Configurator', style:'width:150px;' });
+	node.innerHTML += fragm;
+
+	
+	
+	node = document.getElementById('root');
+	
+	fragm = enabInpLab( { inpId : 'name', labText : 'name', labId : 'labNa', inpType : 'text' } );
+	fragm += enabInpLab( { inpId : 'surname', labText : 'surname', labId : 'labSurn', inpType : 'text' } );
+	fragm += enabInpLab( { inpId : 'position', labText : 'position', labId : 'labPos', inpType : 'text' } );
+	fragm += option1({ id:'addComp', style:'', class:'button', optList:['-- Company --', 'Company1', 'Company2', 'Company3'] });
+	fragm += button1({ id:'deact', value:'Deactivate'});
+	
+	node.innerHTML += fragm;
+
+	
+	//node.innerHTML += tag( { tn:'div', tx:'HEEEEYY', props:{ id:'credErr' } } );	
+
+	node = document.getElementById('root2');
+	
+	fragm = enabInpLab( { inpId : 'email', labText : 'email', labId : 'labEm', inpType : 'text' } );
+	fragm += enabInpLab( { inpId : 'password', labText : 'password', labId : 'labPw', inpType : 'password' } );
+	
+	[% IF funcs.a %]
+	
+		//fragm += button1({ id:'selRfid', value:'RFID'});
+		fragm += option1({ id:'selRfid', style:'', class:'button', optList:['-- Free RFIDs --', '123', '456', '789'] });
+
+	[% END %]
+
+	fragm += option1( { id:'selRole', style:'', class:'button', optList:[% roles %] } );
+	fragm += button1({ id:'createUser', value:'Save'});
+	node.innerHTML += fragm;
+
+
+	// SEND DATA	
+	var bttn = document.getElementById('createUser');
+
+	bttn.addEventListener('click', function(e){
+
+		var data = collectData();
+		alert( data );
+
+		
+		var onSucc = function(myresp){ 
+			alert("FIRST ALERT : " + myresp);
+
+			var resp = JSON.parse(myresp);
+			var sessData = resp[0]['rets'];
+			
+			console.error( "SESSDATA : " + typeof sessData );
+			alert( "SESSDATA : " + resp[0]['rets'].toString() );
+			
+			var sid = sessData.toString().split(",")[0].replace( /(^\s*|\s*$)/, "" );
+			var user = sessData.toString().split(",")[1].replace( /(^\s*|\s*$)/, "" );
+	
+			//if( resp.sid.indexOf('sid') > -1 ){
+			if( sid && sid != ""  ){
+				alert( "INTO FIRST IF : " + JSON.stringify( resp ) );
+				if(document.cookie != ""){
+					document.cookie = "";
+
+					document.cookie = "sid="+sid+"; max-age=864000; path=/; ";
+					//document.cookie = "sid="+resp.sid+"; expires= Thu, 21 Aug 2017 20:00:00 UTC; path=/;HttpOnly ";
+
+					alert( "EMPTY OR NOT : " + document.cookie );
+				}
+				//document.cookie = "sid="+resp.sid+"; expires= Thu, 21 Aug 2017 20:00:00 UTC; path=/;HttpOnly ";
+				// TODO - USE CHECK SESS-ID AND USERNAME TO CHECK ROLE-PRIORITY AND SHOW VISUAL PARTS OF .. IF NO SESSION, THEN REDIRECT HREF TO LOGIN ( FROM SERVER-PART, NOT JS CLIENT )
+				document.cookie = "sid="+sid+"; max-age=86400; path=/; ";
+				document.cookie = "user="+user+"; max-age=86400; path=/; ";
+				document.location.href = "/doLogin?user=" + user;
+			} else {
+
+				//alert("NO COOCKIE SETTED : > " + resp);
+				try {
+					document.getElementById('credErr').removeChild( document.getElementById('wrongcred') );
+				} catch (err) {
+					console.log(err);
+				}
+
+				var dv = document.createElement('div');
+				dv.setAttribute('id', 'wrongcred');
+				dv.style.color = 'red';
+				dv.style.padding = '5px';
+				dv.style.fontSize = '18px';
+				//dv.appendChild( document.createTextNode( JSON.stringify(resp) ) );
+				dv.appendChild( document.createTextNode( 'Wrong credentials' ) );
+
+				document.getElementById('credErr').appendChild( dv );
+				//TEST
+				//document.location.href = "/doLogin?user=" + resp.user;
+			}
+			// TODO : define part if login wrong here
+		}
+		// on error if comun. ajax unsuccesfull, not login
+		var onErr = function(err){ alert("ERROR: " + err ); }
+		var onSucc2 = function(resp){ alert( 'SUCCESFULL -- ' + resp ); }
+		//ajaxRequest("GET", "/doLogin", "user=" + user + "&password=" + pw, onSucc, onErr);
+		 
+		ajaxRequest( {
+			type:"GET",
+			uri:"/servAddUser",
+			query:data,
+			// means if http-req was succesfull, not if applic. backend worked properly
+			onSuccess: onSucc2,
+			onError:onErr
+		} );
+		
+
+	});
+*/
+</script>

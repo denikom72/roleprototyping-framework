@@ -1,0 +1,724 @@
+<link rel="stylesheet" type="text/css" href="/jslib/basic.css">
+<script type="text/javascript" src="/jslib/basic.js"></script>
+
+
+[% all2 = 0 %]
+[%
+	funcs = {
+		a => 1,
+		b =>1 
+	}
+%]
+
+
+[% FOREACH v IN role %]
+		<!-- span> [% role.2 %] </span -->
+	
+[% END %]
+
+	
+<div style="position: absolute; top: 2%; left: 2%; color: navy; font-size: 14px;">
+<b>
+
+[% user %], Role: [% role.2 %] 
+</b>
+
+	
+
+	<!-- b>
+
+	TODOLIST :
+
+		<UL>
+		[% IF rbac.root  || rbac.all %]	
+			<UL>
+			<LI>IF YOU AR ROOT THIS WILL BE ENABLED</LI>
+			<LI>IF YOU ROLE CAN DO ALL, YOU WILL SEE THIS</LI>
+			</UL>
+		[% END %]
+	</b -->
+
+
+			<!-- p>[% rbac.servSearch %] -- [% rbac.all %]</p -->		
+			<div style="width: 100%; display:inline-block; height: 330px; margin-bottom: 20px;margin-top: 20px;" id="searchblock"></div>
+		
+		
+		[% IF rbac.root || rbac.all || rbac.servSearch %]
+	                
+			<div id="singleSearchBlock">
+			</div>
+			
+		[% END %]
+
+		[% IF rbac.root || rbac.all || rbac.servAddUser %]
+	                
+			<div id="root">
+			</div>
+			
+		[% END %]
+
+		<div id="root2" style="display:inline-block; float: none;">
+
+		</div>
+		</b> 
+
+
+<br><br><br>
+<h1>Tasklist</h1>
+<h3>
+<ul>
+	<li>Use model/dao/buslog( is still not dto and/or orm ) to call and compare credentials, to generate sid into db and send it to the browser, and so own</li>
+	<li>Check if exists username and md5-or-sha1-hashed-password</li>
+	<li>If not, send json-ajax-negative-message</li>
+	<li>Otherwise send json-ajax-positive-message, which should trigger the loading of backend,<br> which checks the session-credentials, comparing the browser-stored-sess-id and the one in the database</li>
+</ul>
+</h3>
+</div>
+
+
+<script type="text/javascript">
+
+	var node = document.getElementById('searchblock');
+	var fragm = [];
+	
+	[% IF rbac.root || rbac.all || rbac.servSearch %] 
+		fragm.push
+		( tag( { 
+			tn:'div', 
+			tx: enabInpLab( { inpId : 'search', labText : 'name, surname, rfid, company, position, role or username', labId : 'labSearch', inpType : 'text' } ) + tag( { tn:'div', props:{ id:'ajaxSearchRes' } } ), 
+			props:{ 
+				style:'overflow-y: auto; height: 300px; width: 70%; float: left;',
+				id:'innerSBlock' 
+			} 
+		} ) );
+
+	[% END %]
+
+	fragm.push("<div id='manButtons' style='display:grid;grid-template-columns:330px;'>");
+	
+	[% IF rbac.root || rbac.all || rbac.addNewPerson %] fragm.push( button1({ id:'addNewPerson', value:'+', style:'width:150px;float: none;' }) ); [% END %]
+	
+	[% IF rbac.root || rbac.all || rbac.servRoleManager %]
+	 
+		fragm.push( button1({ id:'roleMan', value:'Manage Roles', style:'width:150px;' }) );
+		
+	[% END %]
+	
+	[% IF rbac.root || rbac.all || rbac.servCompManager %]
+
+		fragm.push( button1({ id:'compMan', value:'Manage Companies', style:'width:150px;' }) );
+
+	[% END %]
+	
+	[% IF rbac.root || rbac.all %] fragm.push( button1({ id:'applMan', value:'Application-Manager', style:'width:150px;' }) );[% END %]
+	
+	fragm.push("</div>");	
+	
+	
+	node.innerHTML += fragm.join(" ");
+
+	
+
+	var inpLeng = document.getElementById("search").value.length;
+
+	document.getElementById('ajaxSearchRes').innerHTML = '';
+	
+	document.getElementById("search").addEventListener('input', function(e){
+		//if( inpLeng <= this.value.length && this.value.length > 2 ){
+		if( this.value.length > 2 ){
+			//alert( this.value + " > " + inpLeng );
+			
+			document.getElementById('ajaxSearchRes').innerHTML = '';
+			function onSucc(resp){
+				var json = JSON.parse(resp);
+				alert(resp);
+				var resList = [];
+
+
+				var k = [ "name", "surname", "rolename", "email", "role" ];
+				json.map(function(v,i){
+
+					var opac = [ "0.45", "0.75" ];
+
+
+					resList.push(
+						tag({ 
+							tn:'p', 
+							//tx: Object.keys(v).sort().map( ( ke, ind ) => { return v[ke]; } ).join(", "), 
+							tx: k.map( ( ke ) => { return v[ke]; } ).join(", "), 
+							props:{ 
+								class:'listres',
+								style:"font-style: italic; font-size: 18px; color: #0d8585; opacity: " + opac[ i < 2 ? ( i + 2 ) % 2 : i % 2 ] + ";" } 
+						})
+					);
+					
+					/*( tag( { 
+						tn:'div', 
+						tx: enabInpLab( { inpId : 'search', labText : v.name + ", " + v.surname, labId : 'labSearch', inpType : 'text' } ) + tag( { tn:'div', tx:' ', props:{ id:'ajaxSearchRes' } } ), 
+						props:{ 
+							style:'overflow-y: auto; height: 300px; width: 70%; float: left;',
+							id:'innerSBlock' 
+						} 
+					} ) );
+					*/
+					
+				});
+
+				//alert( JSON.stringify( resList ) );	
+				
+				document.getElementById('ajaxSearchRes').innerHTML += resList.join("");
+				
+				[% IF rbac.root || rbac.all || rbac.servUpdUser || servDelUser  %]
+				
+				[].forEach.call( document.querySelectorAll('.listres'), (v,i) => {
+					v.addEventListener( "click", (e) => {
+						//alert("TEST" + v.innerHTML);
+						var ndRoot = document.getElementById('root');
+						var ndRoot2 = document.getElementById('root2');
+						
+						ndRoot.style.opacity = 0;
+						ndRoot2.style.opacity = 0;
+
+						var userData = v.innerHTML.split(",");
+						// assign empty val to avoid undefined
+						var cont = "";
+
+						userData.map( ( v, i ) => {
+							var cell = "";
+							
+							if( k[i] != "role" ){
+								cell = enabInpLab({
+									inpId : k[i],
+									labText : k[i],
+									inpType : 'text',
+									val : v,
+									classname : 'labelText labelTextUp' 
+								});
+
+							} else if( k[i] == "role" ){
+								cell = option1
+								({  
+									id:'role',
+									style:'',
+									class:'button',
+									optList: selRole,
+									selectedVal:'admin'
+								});
+							}
+							// if defined
+							/*
+							if( cell ){
+								if( cont ){
+									cont += cell;
+								} else {
+									cont = cell;
+								}
+							}
+							*/
+
+							cont += cell;
+						} );						
+						
+ 
+						cont += option1
+						({ 
+							id:'manUser', 
+							style:'', 
+							class:'button', 
+							optList:
+							[ 
+								" -- Choose Action -- "
+								[% IF rbac.all || rbac.root || rbac.servUpdUser %], "Update" [% END %]
+								[% IF rbac.all || rbac.root || rbac.servDelUser %], "Delete" [% END %] 
+							] 
+						});
+
+						cont += button1({ id:'sendUserMan', value:'GO' });
+
+						document.getElementById('singleSearchBlock').innerHTML = cont;
+					
+						document.getElementById('role').parentElement.style.width = "400px";
+	
+						document.getElementById('sendUserMan').addEventListener('click', function(e){
+							//alert("/serv" + document.getElementById("manUser").value + "User");
+							//alert("ZEZ ILI NE : " + collectData());
+							var onSucc = function(resp){
+								alert(resp);
+								//document.location.href = document.location.origin + document.location.pathname;
+							};
+		
+		
+							var onErr = function(err){
+								alert(err);
+							};
+	
+							
+								
+							ajaxRequest( {
+								type:"GET",
+								uri:"/serv" + document.getElementById('manUser').value + "User",
+								query:collectData(),
+								// means if http-req was succesfull, not if applic. backend worked properly
+								onSuccess: onSucc,
+								onError:onErr
+							} );
+						});
+					});
+				}); 
+				
+				[% END %]
+
+				[% IF rbac.root || rbac.all %]	
+				
+
+				[% END %]
+				
+				[% IF rbac.root || rbac.all || rbac.servUpdUser || rbac.servDelUser %]	
+					// DOESN'T WORK	
+					try {	
+						document.getElementById('sendUserMan').addEventListener('click', function(e){
+							alert("/serv" + "User");
+							alert("ZEZ ILI NE : " + collectData());
+	
+						
+						})
+					} catch( err ){
+						console.log(err);
+					}
+				[% END %]
+			}
+
+			function onErr(err){
+				alert(err);
+			}
+
+			ajaxRequest( {
+				type:"GET",
+				uri:"/servSearch",
+				query:this.value,
+				// means if http-req was succesfull, not if applic. backend worked properly
+				onSuccess: onSucc,
+				onError:onErr
+			} );
+		}
+	});
+
+	var nd1 = document.getElementById('root');
+	var nd2 = document.getElementById('root2');
+
+	
+	nd1.style.opacity = 0;
+	nd2.style.opacity = 0;
+	
+	[% IF rbac.root || rbac.all || rbac.addNewPerson %] 
+	document.getElementById("addNewPerson").addEventListener("click", function(e){
+		//alert("clicktest");
+		e.preventDefault;
+		
+		try {
+			//var nd1 = document.getElementById('root');
+			//var nd2 = document.getElementById('root2');
+				
+			document.getElementById('singleSearchBlock').innerHTML = '';
+			
+			if( nd1.style.opacity != 0 ){ 
+		
+				// REMOVE BUG - labeltext was disabled later as the input-fields, that's why was set color equals transparent before disabling the rest 
+				
+				[ nd1, nd2 ].map( function(va){	
+					[].forEach.call( va.getElementsByClassName('labelText'), function( v, i ){
+						
+						v.style.color = "transparent";
+					});
+
+				} );
+				
+				/* 
+					opacity necessary to not destroy the view structure by setting block equals none,
+					especially later by using css-grid and div-containers
+				*/
+
+				nd1.style.opacity = 0; 
+				nd2.style.opacity = 0;
+ 
+			} else if( nd1.style.opacity == 0 ){ 
+				
+				[ nd1, nd2 ].map( function(va){	
+					[].forEach.call( va.getElementsByClassName('labelText'), function( v, i ){
+						v.style.color = "#3aafa9";
+					} );
+					
+				} );
+
+				nd1.style.opacity = 1; 
+				nd2.style.opacity = 1;
+			}
+
+		} catch(err){
+			console.log(" >>>>> ERROR CLICK + BUTTON : " + err );
+		}
+
+		
+	});
+
+	[% END %]
+
+	var selCompanies = [" -- Company -- "];
+
+	[% FOREACH v IN companies %]
+		selCompanies.push("[% v %]");
+
+	[% END %]
+	
+	
+	node = document.getElementById('root');
+	
+	[% IF rbac.all || rbac.addPerson || rbac.servAddUser %] 
+	
+	var selRole = [" -- Role -- "];
+
+	[% FOREACH v IN roles %]
+		selRole.push("[% v.0 %] : [% v.1 %]");
+
+	[% END %]
+	
+	fragm = 
+	
+	[ 
+		enabInpLab( { inpId : 'name', labText : 'name', labId : 'labNa', inpType : 'text' } ), 
+		enabInpLab( { inpId : 'surname', labText : 'surname', labId : 'labSurn', inpType : 'text' } ),
+		enabInpLab( { inpId : 'email', labText : 'email', labId : 'labEm', inpType : 'text' } ),
+		enabInpLab( { inpId : 'password', labText : 'password', labId : 'labPw', inpType : 'password' } ),
+		option1({ id:'selRole', style:'', class:'button', optList:selRole })
+	];
+
+	// ADD EVENTLISTENER WORKS JUST AFTER THE ASSIGNMENT OF HTML-FRAGMENTS TO HTML-NODES	
+	node.innerHTML = fragm.join(" ");
+	
+	try {	
+		var bttnRoleMan = document.getElementById('roleMan');
+		bttnRoleMan.addEventListener("click", (e) => {
+			e.preventDefault;
+			enabRoleMan();
+		});
+	} catch(err){
+		console.log(err);
+	}
+	
+	[% END %]
+	
+	[% IF rbac.all || rbac.servAddUser %]
+	
+		//node.innerHTML += tag( { tn:'div', tx:'HEEEEYY', props:{ id:'credErr' } } );	
+
+		[% IF rbac.root || rbac.all || rbac.selRfid %]
+		
+			var selRfid = [" -- RFIDs -- "];
+
+			[% FOREACH v IN rfids %]
+				
+				selRfid.push("[% v %]");
+		
+			[% END %]
+			
+			//fragm += button1({ id:'selRfid', value:'RFID'});
+	
+		[% END %]
+		
+		node = document.getElementById('root2');
+	
+		fragm = 
+		[
+			enabInpLab( { inpId : 'position', labText : 'position', labId : 'labPos', inpType : 'text' } ),
+			option1({ id:'addComp', style:'', class:'button', optList:selCompanies }),
+			[% IF rbac.all || rbac.selRfid %]option1({ id:'selRfid', style:'', class:'button', optList:selRfid }), [% END %]
+			button1({ id:'deact', value:'Deactivate'}),
+			button1({ id:'createUser', value:'Save' })
+		];
+		
+		node.innerHTML += fragm.join(" ");
+
+		document.getElementById('applMan').addEventListener('click', function(e){
+			document.location.href = "http://roleproto-frame/applicationMan";
+		});
+
+		var bttn = document.getElementById('createUser');
+	
+		bttn.addEventListener('click', function(e){
+
+		var data = collectData();
+		var dataList = data.split("&");
+		dataList[ dataList.length - 1 ] = dataList[ dataList.length - 1 ].split(":")[0].replace(/^\s*|\s*$/gi, "");
+		data = dataList.join("&");
+		alert( data );
+
+		
+		var onSucc = function(myresp){ 
+			alert("FIRST ALERT : " + myresp);
+
+			var resp = JSON.parse(myresp);
+			var sessData = resp[0]['rets'];
+			
+			console.error( "SESSDATA : " + typeof sessData );
+			alert( "SESSDATA : " + resp[0]['rets'].toString() );
+			
+			var sid = sessData.toString().split(",")[0].replace( /(^\s*|\s*$)/, "" );
+			var user = sessData.toString().split(",")[1].replace( /(^\s*|\s*$)/, "" );
+	
+			//if( resp.sid.indexOf('sid') > -1 ){
+			if( sid && sid != ""  ){
+				alert( "INTO FIRST IF : " + JSON.stringify( resp ) );
+				if(document.cookie != ""){
+					document.cookie = "";
+
+					document.cookie = "sid="+sid+"; max-age=864000; path=/; ";
+					//document.cookie = "sid="+resp.sid+"; expires= Thu, 21 Aug 2017 20:00:00 UTC; path=/;HttpOnly ";
+
+					alert( "EMPTY OR NOT : " + document.cookie );
+				}
+				//document.cookie = "sid="+resp.sid+"; expires= Thu, 21 Aug 2017 20:00:00 UTC; path=/;HttpOnly ";
+				// TODO - USE CHECK SESS-ID AND USERNAME TO CHECK ROLE-PRIORITY AND SHOW VISUAL PARTS OF .. IF NO SESSION, THEN REDIRECT HREF TO LOGIN ( FROM SERVER-PART, NOT JS CLIENT )
+				document.cookie = "sid="+sid+"; max-age=86400; path=/; ";
+				document.cookie = "user="+user+"; max-age=86400; path=/; ";
+				document.location.href = "/doLogin?user=" + user;
+			} else {
+
+				//alert("NO COOCKIE SETTED : > " + resp);
+				try {
+					document.getElementById('credErr').removeChild( document.getElementById('wrongcred') );
+				} catch (err) {
+					console.log(err);
+				}
+
+				var dv = document.createElement('div');
+				dv.setAttribute('id', 'wrongcred');
+				dv.style.color = 'red';
+				dv.style.padding = '5px';
+				dv.style.fontSize = '18px';
+				//dv.appendChild( document.createTextNode( JSON.stringify(resp) ) );
+				dv.appendChild( document.createTextNode( 'Wrong credentials' ) );
+
+				document.getElementById('credErr').appendChild( dv );
+				//TEST
+				//document.location.href = "/doLogin?user=" + resp.user;
+			}
+			// TODO : define part if login wrong here
+		}
+		// on error if comun. ajax unsuccesfull, not login
+		var onErr = function(err){ alert("ERROR: " + err ); }
+		var onSucc2 = function(resp){ 
+			alert( 'SUCCESFULL -- ' + resp ); 
+			document.location.href = document.location.origin + document.location.pathname;
+		}
+		//ajaxRequest("GET", "/doLogin", "user=" + user + "&password=" + pw, onSucc, onErr);
+		 
+		ajaxRequest( {
+			type:"GET",
+			uri:"/servAddUser",
+			query:data,
+			// means if http-req was succesfull, not if applic. backend worked properly
+			onSuccess: onSucc2,
+			onError:onErr
+		} );
+		
+
+	});
+
+	[% END  %]
+
+	//
+	try{ 
+		var rfidMan = document.getElementById('sendRfidMan');
+		rfidMan.addEventListener('click', (e) => {
+			e.preventDefault;
+			document.location.href = document.location.origin + "/servRfidMan";
+		});
+	} catch( err ){
+		console.log( err );
+	}
+
+	/*** ROLE MANAGER VIEW ***/
+
+	function enabRoleMan(){
+		
+		var node = document.getElementById('ajaxSearchRes');
+	
+		if( !node.getElementsByClassName('manRoleCont')[0] ){	
+                        
+			try {
+				
+				node.innerHTML = '';
+				//document.getElementsByClassName('manCont')[0].remove();
+			} catch ( err ){
+				console.log('NODE ERROR ' + err);
+			} finally{
+			
+
+				fragm = 
+				[
+					enabInpLab( { inpId : 'rolename', labText : 'Rolename', labId : 'labRoleName', inpType : 'text' } ), 
+					enabInpLab( { inpId : 'priority', labText : 'Priority-Level', labId : 'labPrLev', inpType : 'text' } ),
+					option1({ id:'manRole', style:'', class:'button', optList:[ " -- Choose Action --", "Add", "Remove ( not recommended )" ] }),
+					button1({ id:'sendRoleMan', value:'GO' })
+				];
+			
+				node.innerHTML += 
+				tag( { 
+					tn : 'div', 
+					tx : fragm.join(" "), 
+					props : { 
+							class: 'manRoleCont manCont',
+							style: 'padding: 25px; display: inline-block; border-radius: 15px; background-color: #c9eceb;'
+						} 
+				} );
+
+				// VERY IMPORTANT TO BUILD EVENT-LISTENER, HERE AFTER CREATE THE NODE
+				document.getElementById('sendRoleMan').addEventListener('click', function(e){
+					//var action = "action=" + document.getElementById('manRole').value;
+					//alert("ZEZ ILI NE : " + collectData());
+
+					var onSucc = function(resp){
+						alert(resp);
+						//document.location.href = document.location.origin + document.location.pathname;
+					};
+
+
+					var onErr = function(err){
+						alert(err);
+					};
+
+					ajaxRequest( {
+						type:"GET",
+						uri:"/servRoleMan",
+						query:collectData(),
+						// means if http-req was succesfull, not if applic. backend worked properly
+						onSuccess: onSucc,
+						onError:onErr
+					} );
+				})
+			}
+		} else {
+			//document.location.reload();
+			document.getElementsByClassName('manRoleCont')[0].remove();
+			//document.getElementById('ajaxSearchRes').innerHTML = '';
+	
+		}
+		/*
+		var n = node.innerHTML;
+		node.innerHTML = fragm + n;
+		*/
+	}
+
+	/*** END ROLE MANAGER VIEW ***/ 	
+
+	function enabCompMan(){
+		
+		var node = document.getElementById('search').parentNode;
+	
+		if( !node.getElementsByClassName('manCompCont')[0] ){	
+                        
+			try {
+				document.getElementsByClassName('manCont')[0].remove();
+			} catch ( err ){
+				console.log('NODE ERROR ' + err);
+			} finally{
+			
+
+				fragm = 
+				[
+					enabInpLab( { inpId : 'compname', labText : 'Company-Name', labId : 'labCompName', inpType : 'text' } ), 
+					option1({ id:'addComp', style:'', class:'button', optList:[ " -- Choose Action --", "Add", "Remove ( not recommended )" ] }),
+					button1({ id:'sendCompMan', value:'GO'})
+				];
+		
+				node.innerHTML += 
+		
+				tag( { 
+					tn : 'div', 
+					tx : fragm.join(" "), 
+					props : { 
+							class: 'manCompCont manCont',
+							style: 'padding: 25px; display: inline-block; border-radius: 15px; background-color: #c9eceb;'
+						} 
+				} );	
+			}
+		} else {
+			//document.location.reload();
+			document.getElementsByClassName('manCompCont')[0].remove();
+	
+		}
+	}
+	try {
+		var bttnCompMan = document.getElementById('compMan');
+
+		bttnCompMan.addEventListener("click", (e) => {
+			e.preventDefault;
+			enabCompMan();
+		}); 
+	} catch(err) {
+		console.log( err );
+	}
+
+	function enabRfidMan(){
+		
+		var node = document.getElementById('search').parentNode;
+	
+		if( !node.getElementsByClassName('manRfidCont')[0] ){	
+                        
+			try {
+				document.getElementsByClassName('manCont')[0].remove();
+			} catch ( err ){
+				console.log('NODE ERROR ' + err);
+			} finally{
+			
+
+				fragm = 
+				[
+					enabInpLab( { inpId : 'rfidstring', labText : 'RFID', labId : 'labRfid', inpType : 'text' } ), 
+					option1({ id:'addRfid', style:'', class:'button', optList:[ " -- Choose Action --", "Add", "Remove ( not recommended )" ] }),
+					button1({ id:'sendRfidMan', value:'GO'})
+				];
+
+				node.innerHTML += 
+				tag( { 
+					tn : 'div', 
+					tx : fragm.join(" "), 
+					props : { 
+							class: 'manRfidCont manCont',
+							style: 'padding: 25px; display: inline-block; border-radius: 15px; background-color: #c9eceb;'
+						} 
+				} );	
+
+			}
+		} else {
+			//document.location.reload();
+			document.getElementsByClassName('manRfidCont')[0].remove();
+	
+		}
+	}
+	try {
+		var bttnCompMan = document.getElementById('rfidMan');
+	
+		bttnCompMan.addEventListener("click", (e) => {
+			e.preventDefault;
+			enabRfidMan();
+		}); 
+	} catch( err ){
+		console.log( err );
+	}
+	/*** END VIEW TOGGLE PART ***/
+
+
+
+	/*** SEND DATA PART ***/	
+
+
+
+
+
+			
+ 
+
+
+	
+</script>
