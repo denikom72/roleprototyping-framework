@@ -61,6 +61,21 @@ sub new4 {
 
 	$self;
 }
+
+sub new5 {
+	my $type = shift;
+	my $id = shift;
+        
+	# if $arg > 0, use accessors, resp. setters to put values
+	my $self = {};
+
+        bless $self, $type;
+
+        $self->accId( $id );
+
+	$self;
+}
+
 ### IMPORTANT: is not necessary to declare private vars, just make perlish netb.convention - accessors 
 
 sub accName {

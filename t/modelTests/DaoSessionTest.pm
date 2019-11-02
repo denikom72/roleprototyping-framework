@@ -58,9 +58,10 @@ sub testSample(){
 	# Try-Catch resp.  evals already a part of the ok-function
 
 	# ADD USER FIRST CAUSE OF FK person 2 users	
-	#ok( $inst->addUser( Users->new( 'jimmy2@timmy.com', 'badpw123ww2') ) );
-	#ok( $inst->addPerson( Person->new( 'Jimmy', 'Timmy', 'chiefprogrammer', 'jimmy@timmy.com' ) ) );
-
+	#ok( $inst->addUser( Users->new( 'superuser@mail.com', 'badpw123ww') ) );
+	#ok( $inst->addPerson( Person->new( 'Jimmy', 'Timmy', 'chiefprogrammer', 'superuser@mail.com' ) ) );
+	#ok( $inst->addUser2Role( Roles->new5( 1 ), Users->new( 'superuser@mail.com', 'badpw123ww2') ) );
+	
 	#ok( $inst->readCreden( Users->new( 'user123@test.com', 'badpw123ww') ) == 1 ); 
 	#ok( $inst->doLogin( $dbh ) );
 	#ok ( $sid = $inst->doLogin2( Users->new( 'user123@test.com', 'badpw123ww' ) ) ); #print "qqqqqqqqqqqqqqqqqqqqqqq : " . $sid;
