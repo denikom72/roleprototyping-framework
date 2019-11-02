@@ -34,9 +34,12 @@ Write following directives into the new conf-file
 
 Close the conf-file and run the cli-command "service apache2 restart <<ENTER>>"
   
-Now you should use the DB_DUMP.sql for creating the database and create a superuser for the application by following command:
+Now you should use the DB_DUMP.sql for creating the database and create a superuser for the application by:
+open the file ./t/modelTests/DaoSessionTest.pm in a texteditor and uncomment the 3 rows with the addUser, addPerson and addUser2Role. Save the file and run in the terminal -
 
-.......
+        perl -e DaoSessionTest.pm
+        
+Now you can login as a superuser.
 
 
 
