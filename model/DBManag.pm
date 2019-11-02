@@ -41,11 +41,6 @@ sub accDbh {
 		return 1;	
 	}
 
-	#if( !$self->{'dbh'}->ping() ){	
-	#	my $DBDATA = $self->accDbData();	
-	#	$self->{'dbh'} = DBI->connect( "DBI:mysql:database=$DBDATA->[0]:$DBDATA->[1]", $DBDATA->[2], $DBDATA->[3], { 'AutoCommit' => 0, 'RaiseError' => 1 } );
-	#}
-	
 	$self->{'dbh'};
 }
 
@@ -54,13 +49,10 @@ sub openDB {
 	my $self = shift;
 	
 	my $DBDATA = $self->accDbData();
-
-	#print Dumper $DBDATA;#die();
-	
 	my $dbh = DBI->connect( "DBI:mysql:database=$DBDATA->[0]:$DBDATA->[1]", $DBDATA->[2], $DBDATA->[3], { 'AutoCommit' => 0, 'RaiseError' => 1, 'PrintError' => 1 } );
 	$self->accDbh($dbh);	
-	#unnecessary, cause accessor delivery dbh-instance 
-	#return $dbh;
+	# somekind of "return $dbh" at the end of the modul, like it is usual in the procedural manner it's not necessary, cause the accessor delivery the dbh-instance 
+	
 } 
 
 

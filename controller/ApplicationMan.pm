@@ -12,11 +12,6 @@ use Data::Dumper;
 
 my @DBDATA = ('comeandgo', 'localhost', 'root', 't00rt00r');
 
-#my $DATA = { 'passw' => 'badpw123ww', 'username' => 'user123@test.com', 'table' => 'users', 'salt' => '2dxx' };
-
-#my $dbm = DBManag->new(\@DBDATA);
-#$dbm->accDbh( $dbm->openDB() );
-
 
 sub new {
 	my $type = shift;
@@ -47,12 +42,6 @@ sub listFuncs {
 
 	open( FH, "<", $mainContrPath ) or warn  " : " . $ENV{'pwd'}.$mainContrPath . " " . $!. "\n";
 
-		
-	#warn Dumper @dir;
-
- 
-	#warn Dumper %ENV;
-
 	while(<FH>){
 		if( /\$rbc->/gi ){
 		if( /\|\|/gi ){
@@ -69,12 +58,6 @@ sub listFuncs {
 			$func =~ s/\$\w+->\{\'(\S*)\'\}/$1/gi;
 	
 			push( @{$self->{'funcListRef'} }, $func ) if $func !~ /(root|all)/gi;
-			#push( @{$self->{'funcListRef'} }, $sent[$#sent] );
-	
-			#if( /\{##_(\S+)\s*?/gi ) {
-			#	push( @{$self->{'funcListRef'} }, $1 );
-				
-			#}
 		} else {
 			
 			my @fnc = split( /\)\{/ );
@@ -87,11 +70,6 @@ sub listFuncs {
 		}
 	}
 
-	warn " TTTTTTTTTTTTTTTTTTTTTTTTTTTTT ";	
-	warn Dumper $self->{'funcListRef'};
-
-        #print "Content-type: text/html; charset=utf-8\n\n";
-	#print Dumper $self->{'funcListRef'};
 	close(FH);
 }
 
@@ -105,8 +83,6 @@ sub listRoles {
 sub listFuncsByRole {
 	my $self = shift;
 	my $rolename = shift;
-
-	#$rolename = $self->{'rbac'}->{'http'}->{'selectedRole'};	
 	# Cache result into a var, to not run the query behind it every time again
 	$self->{'funcByRole'} = $self->{'rbac'}->{'buslInst'}->selFuncsByRole( $rolename );
 	$self->{'funcByRole'};
@@ -119,12 +95,10 @@ sub start {
 	
 
         print "Content-type: text/html; charset=utf-8\n\n";
-	#print "APPMAN WORKS"; 
 
 	$self->listFuncs( $mainContrPath );
 	
         my $tx = Text::Xslate->new ( syntax => 'TTerse' );
-	#my %foo = ('funcs1' => ['xoo']);
 	my $listDto = [];
 	my $listFncsByRole = [];
 
@@ -138,7 +112,6 @@ sub start {
 
 	print $tx->render( '/var/www/roleproto-frame/view/applicationMan2.tx', { 'funcs1' => $self->{'funcListRef'}, 'roles' => $listDto , 'funcsByRole' => $listFncsByRole,  'http' => $self->{'rbac'}->{'http'}->{'req'} } );
 
-	#$self->listRoles()->[0]->accName("muuuu");
 	print Dumper $listFncsByRole;
 	#print Dumper $self->{'rbac'}->{'http'};
 }

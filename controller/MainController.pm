@@ -41,10 +41,6 @@ sub chkRbac {
 	
 	if( $self->{'sid'}->chkSID ){
 				
-		#compare db-stored sid and cookie-sid and bind  user-name, later with role in the view and call rights/role for this user  
-		# fill and send role in %vars too. Maybe should make own snippet-tpls for button and bind it into it or send as 	
-		#warn "RBAC-->" . Dumper $sid->rbac();
-		#print "RBAC-->" . Dumper $sid->rbac();
 				
 		my @rbacList; 
 				
@@ -75,16 +71,14 @@ sub chkRbac {
 	} else {
 		die('you have no right to use my verry special and wunderfull methods, okeeyyyy');
 	}
-	#warn "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM";
-	#warn Dumper \%rbac;
 	$self->{'vars'};
-	#\%rbac;
 	
 }
 
 # TODO SHOULD BE PRIVATE
 sub login {
 	# REQUEST_URL, QUERY_STRING, COOKIE
+	
 	my $http = shift;
 	my $sess = Session->new()->login();
 }
@@ -128,7 +122,7 @@ sub doLogin {
 	my $rbac = chkRbac( $http );
 	my $rbc = $rbac->{'rbac'};
 
-	if ( $rbc->{'all'} || $rbc->{'doLogin'} ){##_doLogin	
+	if ( $rbc->{'all'} || $rbc->{'doLogin'} ){	
 
 		my $sess = Session->new()->doLogin($http);
 	}
@@ -149,13 +143,9 @@ sub servAddUser {
 	my $rbac = chkRbac( $http );
 	my $rbc = $rbac->{'rbac'};
 	
-	if( $rbc->{'all'} || $rbc->{'servAddUser'} ){##_add_new_application_user
-		
-		warn "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
-		warn Dumper $rbc;
-		#print "Content-type: application/json; charset=utf-8\n\n";
-		#print '[{ bla : \'foo\' }]';
-		#my $servLog = ServAddUser->new()->ajaxCheck($http);
+	if( $rbc->{'all'} || $rbc->{'servAddUser'} ){ 
+
+		##_add_new_application_user
 		my $servLog = ServAddUser->new($http)->addUser();
 	}
 }
@@ -168,11 +158,6 @@ sub servUpdUser {
 	
 	if( $rbc->{'all'} || $rbc->{'servUpdUser'} ){##_add_new_application_user
 		
-		warn "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
-		warn Dumper $rbc;
-		#print "Content-type: application/json; charset=utf-8\n\n";
-		#print '[{ bla : \'foo\' }]';
-		#my $servLog = ServAddUser->new()->ajaxCheck($http);
 		my $servLog = ServUpdUser->new($rbac)->delUser();
 	}
 }
@@ -185,11 +170,6 @@ sub servDelUser {
 	
 	if( $rbc->{'all'} || $rbc->{'servDelUser'} ){##_add_new_application_user
 		
-		warn "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
-		warn Dumper $rbc;
-		#print "Content-type: application/json; charset=utf-8\n\n";
-		#print '[{ bla : \'foo\' }]';
-		#my $servLog = ServDelUser->new($rbc)->ajaxCheck($http);
 		my $servLog = ServDelUser->new($rbac)->delUser();
 	}
 }
@@ -201,15 +181,8 @@ sub servRoleManager {
 
 	my $rbac = chkRbac( $http );
 	my $rbc = $rbac->{'rbac'};
-	#die Dumper $rbc;	
 	if( $rbc->{'all'} || $rbc->{'servRoleManager'} ){
 		
-
-		#warn "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
-		#warn Dumper $rbc;die();
-		#print "Content-type: application/json; charset=utf-8\n\n";
-		#print '[{ bla : \'foo\' }]';
-		#my $servLog = ServAddUser->new()->ajaxCheck($http);
 		my $servRoleMan = ServRoleManager->new($rbac)->roleMan();
 	}
 }
@@ -224,11 +197,6 @@ sub servRoleManager2 {
 	
 	if( $rbc->{'all'} || $rbc->{'servRoleManager'} ){##_add_new_application_user
 		
-		warn "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
-		warn Dumper $rbc;
-		#print "Content-type: application/json; charset=utf-8\n\n";
-		#print '[{ bla : \'foo\' }]';
-		#my $servLog = ServAddUser->new()->ajaxCheck($http);
 		my $servRoleMan = ServRoleManager->new($rbac)->addRole();
 	}
 }
@@ -242,11 +210,11 @@ sub servCompanyManager {
 	
 	if( $rbc->{'all'} || $rbc->{'servCompanyManager'} ){##_add_new_application_user
 		
-		warn "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
+		warn "___________________________";
 		warn Dumper $rbc;
-		#print "Content-type: application/json; charset=utf-8\n\n";
-		#print '[{ bla : \'foo\' }]';
-		#my $servLog = ServAddUser->new()->ajaxCheck($http);
+		print "Content-type: application/json; charset=utf-8\n\n";
+		print '[{ bla : \'foo\' }]';
+		my $servLog = ServAddUser->new()->ajaxCheck($http);
 	}
 }
 
@@ -257,13 +225,7 @@ sub servSearch {
 	
 	my $rbc = $rbac->{'rbac'};
 	
-	if( $rbc->{'all'} || $rbc->{'servSearch'} ){##_add_new_application_user
-		
-		#warn "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
-		#warn Dumper $rbc;
-		#print "Content-type: application/json; charset=utf-8\n\n";
-		#print '[{ bla : \'foo\' }]';
-		#my $servLog = ServSearch->new()->ajaxCheck($http);
+	if( $rbc->{'all'} || $rbc->{'servSearch'} ){
 		my $servLog = ServSearch->new($rbac)->search();
 	}
 }

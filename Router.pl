@@ -96,9 +96,6 @@ sub cookieReader {
 			$_ =~ s/(^\s*|\s$)//gi;
 		} ( $value, $key );
 
-		#$value =~ s/(^\s*|\s$)//gi;
-		#$key =~ s/(^\s*|\s$)//gi;
-		
 		$COOKIE{$key} = $value;
         }           
 	

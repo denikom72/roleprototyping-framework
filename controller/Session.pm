@@ -14,12 +14,6 @@ use Data::Dumper;
 
 my @DBDATA = ('comeandgo', 'localhost', 'root', 't00rt00r');
 
-#my $DATA = { 'passw' => 'badpw123ww', 'username' => 'user123@test.com', 'table' => 'users', 'salt' => '2dxx' };
-
-#my $dbm = DBManag->new(\@DBDATA);
-#$dbm->accDbh( $dbm->openDB() );
-
-
 sub new {
 	my $type = shift;
 
@@ -50,7 +44,6 @@ sub login {
         );
 
         # for files
-        #print $tx->render('/var/www/roleproto-frame/view/login.tx', { foo => "fooYESFOO"});
         print $tx->render('/var/www/roleproto-frame/view/login.tx', \%vars);
 
 }
@@ -69,21 +62,12 @@ sub doLogin {
 	my $ret = 1;
         print "Content-type: text/html; charset=utf-8\n\n";
 
-	#print( "<div><pre>" );
-	#print Dumper $cred;
-	#print( "</pre></div><br><br><br>" );	
-	#warn("FILE AND LINE : ");print ":::::: >>> ";print Dumper $cred;
-
-        #print "TEST2 : " . $quer->{'bar'};
         my $tx = Text::Xslate->new ( syntax => 'TTerse' );
 		
 	my $usr = Users->new2( $cred->{'coo'}->{'user'}, $cred->{'coo'}->{'sid'} );
 	warn Dumper $usr;
 	warn('\n\n----------------\n\n');
 	warn Dumper $cred;		
-	#my $busL = DaoSession->new( $self->{'dbm'}->accDbh() );
-		
-	#warn("F-L-N : "); print Dumper $busL;
 	
 	$ret = sub {
 
@@ -91,50 +75,31 @@ sub doLogin {
 		
 		try {
 			
-			#my $logSucc = $busL->doLogin2( Users->new( 'user123@test.com', 'badpw123ww' ) );
 			$sid = DaoSession->new( $self->{'dbm'}->accDbh() );
 			$sid->chkSID( $sid->checkSessID( $usr ) );
 			
-			#warn( "CHECK SESSCHECK : " . $sid );
-			#my $logSucc = $busL->doLogin2( Users->new( $cred->{'req'}->{'user'}, $cred->{'req'}->{'password'} ) );
-		
-			#print $logSucc."  OOOOOOOOOOOOOOOOOOOOOOOOOOO ";
-			#print $usr->accSid();
-			
 			$ret = $sid->chkSID();
-			#if( length $logSucc <= 0 ){
 			if( !$sid->chkSID() ){
 				$ret = 0;
 				#TODO : redirect to login site
 				print "";
 			} 
 	
-			# Dummy example hashref for tpl-testing 
-			#print Dumper %vars; warn("F-L");
-		        
-			# for files
 			$ret;
 		} catch {
-			warn "ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRcaught error: $_"; # not $@
-			print "ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRcaught error: $_"; # not $@
+			warn "caught error: $_"; # not $@
+			print "error: $_"; # not $@
 	
 			
 			if( $sid->chkSID() ){
 				$ret = "OKEY";
-				#$usr->accEmail();
 			}		
 			$ret = 0;
 		} finally {
-			#produce error so uncomment
-			#$ret;
 			
 		
 		        if( $sid->chkSID() ){
 				
-				#compare db-stored sid and cookie-sid and bind  user-name, later with role in the view and call rights/role for this user  
-				# fill and send role in %vars too. Maybe should make own snippet-tpls for button and bind it into it or send as 	
-				#warn "RBAC-->" . Dumper $sid->rbac();
-				#print "RBAC-->" . Dumper $sid->rbac();
 				
 				my $rfid = [];
 				
@@ -184,12 +149,9 @@ sub doLogin {
 					rfids => $rfid 
 			       	);
 
-				#print Dumper \%rbac. " -- <br><br>"; print Dumper \%vars; 	
 
 				print $tx->render('/var/www/roleproto-frame/view/doLogin.tx', \%vars);
 			}
-			
-			#$ret;
 		}
 	}->();
 

@@ -37,28 +37,12 @@ sub adaptAppliConf {
 	my $self = shift;
 	
 
-	#my $DBDATA = ['comeandgo', 'localhost', 'root', 't00rt00r'];
-
-	#my $dbh = DBI->connect( "DBI:mysql:database=$DBDATA->[0]:$DBDATA->[1]", $DBDATA->[2], $DBDATA->[3], { 'AutoCommit' => 0, 'RaiseError' => 1 } );
-
 	my $dbh = $self->{'dbm'}->accDbh();
 
 	my $req = $self->{'rbac'}->{'http'}->{'req'};
 	
 	my $type = "Content-type: application/json; charset=utf-8\n\n";
         print $type;
-
-	#my $pers = Person->new( 'name', 'surname', 'position', 'email' );
-
-
-	#my $frzUsr = freeze $usr;
-	#my $frzPers = freeze $pers;
-
-	warn  " ------------------------- ";
-	#warn ( "--------------------->>>>> :::::: " . $pers->accSurname() . " -- " . $pers->accPosition() );
-	warn Dumper $req;
-	#print( JSON->new->utf8->encode( $frzPers ) );
-	
 	
 	$ret = sub {
 
@@ -68,10 +52,8 @@ sub adaptAppliConf {
 		
 		try {
 			
-			#my $logSucc = $busL->doLogin2( Users->new( 'user123@test.com', 'badpw123ww' ) );
-			
 			$daosess = DaoSession->new( $dbh );
-			## TODO implement switch case and create enum fields "lower" and "equls+lower" fro the role_abil-table 
+			## TODO implement switch case and create enum fields "lower" and "equls+lower" from the role_abil-table 
 			if( $self->{'rbac'}->{'http'}->{'req'}->{'action'} eq 'save' ){			
 				map{
 					$daosess->adaptApplic( Role_Ability->new2( [ split "_", $_ ]->[0], [ split "_", $_ ]->[1] ), Roles->new2( $req->{'selRole'} ) );

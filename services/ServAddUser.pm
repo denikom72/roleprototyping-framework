@@ -21,13 +21,6 @@ my $DBDATA = ['comeandgo', 'localhost', 'root', 't00rt00r'];
 
 $dbh = DBI->connect( "DBI:mysql:database=$DBDATA->[0]:$DBDATA->[1]", $DBDATA->[2], $DBDATA->[3], { 'AutoCommit' => 0, 'RaiseError' => 1 } );
 
-#my $DATA = { 'passw' => 'badpw123ww', 'username' => 'user123@test.com', 'table' => 'users', 'salt' => '2dxx' };
-
-#my $dbm = DBManag->new(\@DBDATA);
-#$dbm->accDbh( $dbm->openDB() );
-
-
-
 
 sub new {
 	my ( $type, $http ) = ( shift, shift );
@@ -46,11 +39,6 @@ sub new {
 	$self->{'sid'}->chkSID( $self->{'sid'}->checkSessID( $usr ) );
 	
 	if( $self->{'sid'}->chkSID ){
-				
-		#compare db-stored sid and cookie-sid and bind  user-name, later with role in the view and call rights/role for this user  
-		# fill and send role in %vars too. Maybe should make own snippet-tpls for button and bind it into it or send as 	
-		#warn "RBAC-->" . Dumper $sid->rbac();
-		#print "RBAC-->" . Dumper $sid->rbac();
 				
 		my @rbacList; 
 				
@@ -86,11 +74,6 @@ sub addUser {
 	
 	my $self = shift;
 	
-
-	#my $DBDATA = ['comeandgo', 'localhost', 'root', 't00rt00r'];
-
-	#my $dbh = DBI->connect( "DBI:mysql:database=$DBDATA->[0]:$DBDATA->[1]", $DBDATA->[2], $DBDATA->[3], { 'AutoCommit' => 0, 'RaiseError' => 1 } );
-
 	my $dbh = $self->{'dbm'}->accDbh();
 
 	my $req = $self->{'http'}->{'req'};
@@ -104,17 +87,6 @@ sub addUser {
 	
 	my $role = Roles->new2( $req->{'selRole'} );
 
-	#my $userRole = UserRole->new( $req->{'email'}, $req->{'role'} );
-	#my $pers = Person->new( 'name', 'surname', 'position', 'email' );
-
-
-	#my $frzUsr = freeze $usr;
-	#my $frzPers = freeze $pers;
-
-	#warn Dumper $frzPers . " ------------------------- ";warn ( "--------------------->>>>> :::::: " . $pers->accSurname() . " -- " . $pers->accPosition() );
-	
-	#print( JSON->new->utf8->encode( $frzPers ) );
-	
 	
 	$ret = sub {
 
@@ -124,18 +96,8 @@ sub addUser {
 		
 		try {
 			
-			#my $logSucc = $busL->doLogin2( Users->new( 'user123@test.com', 'badpw123ww' ) );
-			
-			#$daosess = DaoSession->new( $dbh );
-			#$daosess->addUser( $usr );
-			#$daosess->addPerson( $pers );
-			#my $lDto = $daosess->selRoles();
-
 			$self->{'sid'}->addUser( $usr );
 			$self->{'sid'}->addPerson( $pers );
-			warn "INTOOOOOO ADDDDDDDUUUUUUUUUUUUUUUUUUUUUUUUUUUUSERR";
-			#warn Dumper $lDto;	
-			#warn Dumper $lDto->[0]->accName();	
 	
 			map{
 				if( $_->accName() eq $role->accName() ){
@@ -154,7 +116,6 @@ sub addUser {
 			
 			if( length ( $usr->accSid() ) > 1 ){
 				$ret = "OKEY";
-				#$usr->accEmail();
 			} 
 			$ret = 0;
 
@@ -162,12 +123,8 @@ sub addUser {
 
 
 		} finally {
-			#produce error so uncomment
-			#$ret;
-			
 		
 			print( JSON->new->utf8->encode( [ { 'errs' => join("," , @err) } ] ) );
-			#print( JSON->new->utf8->encode( \%vars ) );
 		}	
 	}->();
 
