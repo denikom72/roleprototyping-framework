@@ -8,18 +8,24 @@ Extend to sentence "127.0.0.1 localhost" into "127.0.0.1 localhost roleproto-fra
 
 Create the file "roleproto-frame.conf" in the directory "/etc/apache2/sites-available".
 
-Write following directives into the new conf-file:
+Write following directives into the new conf-file
+
+
+
+
+
+
+
+
 
 <VirtualHost *:80>
+
         ServerName roleproto-frame
         DocumentRoot "/var/www/roleproto-frame"
         ErrorLog /var/log/apache2/error.log
         CustomLog /var/log/apache2/access.log agent
         LogLevel debug
-
-
         RewriteEngine on
-
         <Directory /var/www/roleproto-frame>
                 AddHandler perl-script .pl
                 PerlResponseHandler ModPerl::Registry
