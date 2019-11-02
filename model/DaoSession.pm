@@ -44,8 +44,6 @@ sub priorFiltSimple {
 
 sub priorFilt {
 	my $self = shift;
-	#warn "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ";
-	#warn Dumper $self->rbac();
 	return " WHERE ( ( SELECT priority FROM roles WHERE name LIKE ? ) " . $self->rbac()->[0]->[4] . $self->rbac()->[0]->[1] . " ) ";
 }
 
@@ -57,8 +55,6 @@ sub priorFilt2 {
 
 sub priorFilt3 {
 	my $self = shift;
-	#warn "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ";
-	#die (Dumper $self->rbac());
 	return " WHERE (  ?  " . $self->rbac()->[0]->[4] . $self->rbac()->[0]->[1] . " ) ";
 }
 
@@ -219,8 +215,6 @@ sub addPerson {
 sub addUser {
 	my $self = shift;
 	my $usr = shift;
-	#print Dumper $usr;
-	#print $usr->accEmail() . " mEEEEE";
 	my $DATA = $self->accTabData();
 
 	$DATA->{'username'} = $usr->accEmail();
@@ -291,11 +285,7 @@ sub delUser {
 	my $parameter = '';
 	my $values = '?';
 	my @EXECUTE = ( $usr->accEmail() );
-	warn "\n\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n\n"; #die();
-	#warn Dumper \@EXECUTE; die(); 
 	# NO INNER JOIN NECESSARY, CAUSE 'ON CASCADE' WAS USED BY DB-DESIGNING
-	#warn "DELUSER DAO INTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO";die();
-	
 	my @CRUD =
 	(
 				
@@ -312,14 +302,6 @@ sub delUser {
 			my $sth = $self->{'dbh'}->prepare( $_->{'query'} );
 					
 			$sth->execute( @{ $_->{'exec'} } );
-				#die( "DBERR : " . $err );
-			
-			# avoid error by using fetchrow_array, after CRUD operations
-	
-			warn "INTO QQQQQQQQQQQQQQQQQUUUUUUUUUUUUUEEEEEEERY\n\n";
-			#push( @results, \@res );
-			#print Dumper @results;
-			#$sth->execute( $sid, $DATA{username}, $hash );
 		} @CRUD;
 
 	} catch {
@@ -328,29 +310,12 @@ sub delUser {
 		$_;
 	}
 	
-	#$self->{'dbh'}->commit();
-	
-	#try {
-	
-		#my $sth = $self->{'dbh'}->prepare($sql);
-		#$sth->execute();
- 
-		#my $res = $sth->fetchall_arrayref();
-
-		#warn Dumper $res; die();	
-		
-	#} catch {
-	#	warn $sth->errstr . " _________ " . $_;
-	#	$_;
-	#}
 }
 
 
 sub updUser {
 	my $self = shift;
 	my $usr = shift;
-	#print Dumper $usr;
-	#print $usr->accEmail() . " mEEEEE";
 	my $DATA = $self->accTabData();
 
 	$DATA->{'username'} = $usr->accEmail();
@@ -489,15 +454,10 @@ sub doLogin2 {
 	$DATA->{'username'} = $usr->accEmail();
 	$DATA->{'passwd'} = $usr->accPasswordhash();
 		
-	#warn( "CRRRRRRRRRREEEEEEEEEEEEEEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDSSS : " . $usr->accPasswordhash() );
 	my %DATA = %{$DATA};
 	
 	$DATA->{'salt'} = $self->accSalt();
 
-	#warn('file-line');	
-	#print Dumper $DATA;
-	#print "END FILE : " . __FILE__ . "\n\n";
-	
 	my @SIDCHARS = ("A" .. "Z", "a" .. "z", 0 .. 9);
 	my $sid = join("", @SIDCHARS[ map {rand @SIDCHARS } (1 .. 30) ]);
         
@@ -543,10 +503,6 @@ sub doLogin2 {
 				}
 				# avoid error by using fetchrow_array, after CRUD operations
 				@results=$sth->fetchrow_array() if $_->{'query'} =~ m|SELECT |gi;
-
-				#push( @results, \@res );
-				#print Dumper @results;
-				#$sth->execute( $sid, $DATA{username}, $hash );
 			} @SQL;
 			
 			# last query
@@ -554,15 +510,6 @@ sub doLogin2 {
 			$cookie1 = CGI::Cookie->new(-name => "username", -value => "$DATA{username}", -expires => "+30d", -path => "/", -secure => 0, httponly => 1);
 			$cookie2 = CGI::Cookie->new(-name => "sid", -value => "$results[1]->[0]", -expires => "+30d", -path => "/", -secure => 0, httponly => 1);
 			
-
-			#print "Set-Cookie: $cookie1\n";
-			#print "Set-Cookie: $cookie2\n";
-	
-			#print Dumper \@results;
-			#for unit-test-purpose
-			
-			#return $results[1]->[0]; #,
-			#return $cookie2;
 			return { 
 				#sid for ajax, to set by js, instead with print above
 				sessData => \@results,
@@ -572,8 +519,6 @@ sub doLogin2 {
 			
 	
 		} catch {
-			# if var not exists, print message to logfile, not stdout resp. client, which would produce another error 
-			#warn $sth->errstr." ------------------------------------------------ \n\n";
 			warn "caught error: $_"; # not $@
 			warn $warn;
 			0;
@@ -678,8 +623,6 @@ sub listSearchRes {
 	my $self = shift;
 	my $argObj = shift;
 	my $listOfDto = [];
-	#warn " %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% " ; warn Dumper $self->rbac(); die();
-	#my $roles = Roles->new();
 	my $sth = "";
 	my $sql = 
 	"
@@ -720,15 +663,12 @@ sub listSearchRes {
 
 	";
 
-	#die("FOOOOOOOOOOOOOOOOOOOOO");
 	my @EXEC;
 	
 	map {
 		push( @EXEC, $argObj->accSearch() );
 	}( 0, 1, 2 );
 
-	#my $sql = "SELECT * FROM roles ORDER BY priority ASC;";
-	#warn "##################################### " . $sql2;die();	
 	try {
 		my $sth = $self->{'dbh'}->prepare($sql);
 
@@ -743,11 +683,11 @@ sub listSearchRes {
 	} catch {
 		warn "SELROLES ERROR : " . $_;
 
-		warn Dumper $listOfDto; warn " WARN ggggggggggggggggggggggggggggggggggggg";
+		warn Dumper $listOfDto; 
 		$listOfDto;
 		
 	} finally {
-		warn "FINALLY ggggggggggggggggggggggggggggggggggggg";
+		warn "FINALLY";
 		warn Dumper $listOfDto; 
 	};	
 	
@@ -762,8 +702,7 @@ sub selRoles {
 	#my $roles = Roles->new();
 	my $sth = "";
 	my $sql = "SELECT * FROM roles " . $self->priorFilt2() . " ORDER BY priority ASC;";
-	#my $sql = "SELECT * FROM roles ORDER BY priority ASC;";
-	#warn "##################################### " . $sql2;die();	
+	
 	try {
 		my $sth = $self->{'dbh'}->prepare($sql);
 
@@ -907,14 +846,10 @@ sub rbac {
 		try {
 			$sth = $self->{'dbh'}->prepare($tSql);
 			$sth->execute( $usr, $usr );
-			#$sth->execute();
-			warn("______________________________________\n");	
 			warn("______________________________________\n");	
 			warn Dumper $sth;	
 			
 			my $res=$sth->fetchall_arrayref();
-			#my %res = %{$res};
-			warn "ROLEABILITIIIIIIIIIIIIIIIIIIIIIIEEEEESSS" . Dumper $res;
 			map{
 				if( $_->[4] eq 'lower' ){
 					$_->[4] = " < ";
@@ -929,8 +864,6 @@ sub rbac {
 			0;	
 		}
 	}->();
-
-	#$self->{'rbac'} = $mess;
 
 	1;
 	}
@@ -982,7 +915,6 @@ sub checkSessID {
 			$res[0];
 		} catch {
 			warn " ERROR : " . $_ . " __  ". $sth->errstr;
-			#print " ERROR : " . $_ . " __ " . $sth->errstr;
 			0;	
 		}
 	}->();
