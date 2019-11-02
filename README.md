@@ -11,14 +11,7 @@ Create the file "roleproto-frame.conf" in the directory "/etc/apache2/sites-avai
 Write following directives into the new conf-file
 
 
-
-
-
-
-
-
-
-<VirtualHost *:80>
+        <VirtualHost *:80>
 
         ServerName roleproto-frame
         DocumentRoot "/var/www/roleproto-frame"
@@ -35,9 +28,8 @@ Write following directives into the new conf-file
                 Order allow,deny
                 Allow from all
         </Directory>
-
         
-</VirtualHost>
+        </VirtualHost>
 
 
 Close the conf-file and run the cli-command "service apache2 restart <<ENTER>>"
